@@ -9,12 +9,18 @@ export const EntityBalanceSchema = z.object({
 	adjustment: z.number(),
 });
 
-export const AutoTopUpConfigSchema = z.object({
-	enabled: z.boolean(),
-	threshold: z.number(),
-	topup_amount: z.number(),
-	last_topup_at: z.number().nullish(),
-});
+export const AutoTopUpConfigSchema = z
+	.object({
+		enabled: z.boolean(),
+		threshold: z.number().min(0),
+		topup_amount: z.number().min(0),
+		last_topup_at: z.number().nullish(),
+	})
+	.refine((data) => data.threshold < data.topup_amount, {
+		message:
+			"Threshold must be less than top-up amount to prevent immediate re-triggering",
+		path: ["threshold"],
+	});
 
 export const CustomerEntitlementSchema = z.object({
 	// Foreign keys
