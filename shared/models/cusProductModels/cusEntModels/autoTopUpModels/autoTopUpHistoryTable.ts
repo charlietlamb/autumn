@@ -2,8 +2,8 @@ import {
 	foreignKey,
 	index,
 	integer,
+	numeric,
 	pgTable,
-	real,
 	text,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -22,17 +22,17 @@ export const autoTopupHistory = pgTable(
 		}).notNull(),
 		triggered_at: integer("triggered_at").notNull(),
 
-		credits_added: real("credits_added").notNull(),
-		balance_before: real("balance_before").notNull(),
-		balance_after: real("balance_after").notNull(),
+		credits_added: numeric({ mode: "number" }).notNull(),
+		balance_before: numeric({ mode: "number" }).notNull(),
+		balance_after: numeric({ mode: "number" }).notNull(),
 
-		amount_charged: real("amount_charged").notNull(),
+		amount_charged: numeric({ mode: "number" }).notNull(),
 		currency: varchar("currency", { length: 10 }).notNull(),
 		invoice_id: varchar("invoice_id", { length: 255 }),
 		stripe_invoice_id: varchar("stripe_invoice_id", { length: 255 }),
 
-		threshold_at_trigger: real("threshold_at_trigger").notNull(),
-		topup_amount_config: real("topup_amount_config").notNull(),
+		threshold_at_trigger: numeric({ mode: "number" }).notNull(),
+		topup_amount_config: numeric({ mode: "number" }).notNull(),
 
 		status: varchar("status", { length: 50 }).notNull(),
 		error_message: text("error_message"),

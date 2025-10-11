@@ -24,7 +24,7 @@ export const AutoTopUpHistorySchema = z.object({
 	threshold_at_trigger: z.number(),
 	topup_amount_config: z.number(),
 
-	status: z.enum(AutoTopUpStatus),
+	status: z.nativeEnum(AutoTopUpStatus),
 	error_message: z.string().nullable(),
 });
 

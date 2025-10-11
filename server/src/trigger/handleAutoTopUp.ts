@@ -1,6 +1,7 @@
 import {
 	type AppEnv,
 	autoTopupHistory,
+	AutoTopUpStatus,
 	type Customer,
 	type Feature,
 	type FullCusProduct,
@@ -137,10 +138,6 @@ export const handleAutoTopUp = async ({
 			throw new Error(error?.message || "Payment failed for unknown reason");
 		}
 
-		const newBalance: number = new Decimal(cusEnt.balance ?? 0)
-			.plus(topupAmount)
-			.toNumber();
-
 		await InvoiceService.createInvoiceFromStripe({
 			db,
 			stripeInvoice: finalizedInvoice,
@@ -149,13 +146,16 @@ export const handleAutoTopUp = async ({
 			productIds: [cusProduct.product_id],
 			internalProductIds: [cusProduct.internal_product_id],
 			org,
-			sendRevenueEvent: false, // Auto top-up is not new revenue
 		});
 
 		const autumnInvoice = await InvoiceService.getByStripeId({
 			db,
 			stripeId: finalizedInvoice.id,
 		});
+
+		const newBalance: number = new Decimal(cusEnt.balance ?? 0)
+			.plus(topupAmount)
+			.toNumber();
 
 		await CusEntService.update({
 			db,
@@ -183,10 +183,11 @@ export const handleAutoTopUp = async ({
 			stripe_invoice_id: finalizedInvoice.id,
 			threshold_at_trigger: threshold,
 			topup_amount_config: topupAmount,
-			status: "completed",
+			status: AutoTopUpStatus.Completed,
 			error_message: null,
 		});
 
+		// ideally we use a logger here, one passed has any type so using console.log to be safe
 		console.log(
 			`Auto top-up successful: Added ${topupAmount} credits, new balance: ${newBalance}`,
 		);
@@ -233,7 +234,7 @@ export const handleAutoTopUp = async ({
 				stripe_invoice_id: invoiceId,
 				threshold_at_trigger: threshold,
 				topup_amount_config: topupAmount,
-				status: "failed",
+				status: AutoTopUpStatus.Failed,
 				error_message: errorMessage,
 			});
 		} catch (historyError) {

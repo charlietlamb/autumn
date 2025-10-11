@@ -16,7 +16,7 @@ export const AutoTopUpConfigSchema = z
 		topup_amount: z.number().min(0),
 		last_topup_at: z.number().nullish(),
 	})
-	.refine((data) => data.threshold < data.topup_amount, {
+	.refine((data) => data.threshold <= data.topup_amount, {
 		message:
 			"Threshold must be less than top-up amount to prevent immediate re-triggering",
 		path: ["threshold"],
