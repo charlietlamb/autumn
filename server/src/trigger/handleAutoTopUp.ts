@@ -70,7 +70,7 @@ export const handleAutoTopUp = async ({
 	}
 
 	const topupAmount: number = autoTopUpConfig.topup_amount;
-	const balanceBefore: number = currentBalance;
+	const balanceBefore: number = cusEnt.balance ?? 0;
 	const now: number = Date.now();
 
 	const stripeCli = createStripeCli({ org, env });
@@ -137,7 +137,7 @@ export const handleAutoTopUp = async ({
 			throw new Error(error?.message || "Payment failed for unknown reason");
 		}
 
-		const newBalance: number = new Decimal(currentBalance)
+		const newBalance: number = new Decimal(cusEnt.balance ?? 0)
 			.plus(topupAmount)
 			.toNumber();
 
