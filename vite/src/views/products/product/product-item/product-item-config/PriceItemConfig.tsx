@@ -1,15 +1,21 @@
+import { UsageModel } from "@autumn/shared";
+import { CircleGauge, Cog, Fuel } from "lucide-react";
 import FieldLabel from "@/components/general/modal-components/FieldLabel";
 import { SelectType } from "@/components/general/SelectType";
-import { CircleGauge, Cog } from "lucide-react";
-import { useProductItemContext } from "../ProductItemContext";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { nullish } from "@/utils/genUtils";
+import CreateFixedPrice from "../../prices/CreateFixedPrice";
+import { ConfigWithFeature } from "../components/ConfigWithFeature";
+import { SelectItemFeature } from "../components/SelectItemFeature";
 import {
 	defaultPaidFeatureItem,
 	defaultPriceItem,
 } from "../create-product-item/defaultItemConfigs";
-import { ConfigWithFeature } from "../components/ConfigWithFeature";
-import CreateFixedPrice from "../../prices/CreateFixedPrice";
-import { UsageModel } from "@autumn/shared";
-import { nullish } from "@/utils/genUtils";
+import { useProductItemContext } from "../ProductItemContext";
 
 export const PriceItemConfig = () => {
 	const { item, setItem, isUpdate } = useProductItemContext();
@@ -52,8 +58,13 @@ export const PriceItemConfig = () => {
 			{item.isVariable === true && (
 				<>
 					{/* {item.usage_model !== null && } */}
-					<ConfigWithFeature />
+
+					<div>
+						<FieldLabel>Feature</FieldLabel>
+						<SelectItemFeature />
+					</div>
 					{item.feature_id && <SelectUsageModel />}
+					<ConfigWithFeature />
 				</>
 			)}
 			{item.isVariable === false && <CreateFixedPrice />}
@@ -63,6 +74,24 @@ export const PriceItemConfig = () => {
 
 const SelectUsageModel = () => {
 	const { item, setItem } = useProductItemContext();
+
+	const isAutoTopUpDisabled = item.feature_type === "continuous_use";
+
+	const autoTopUpButton = (
+		<SelectType
+			className="col-span-2 w-full"
+			title="Auto Top-Up"
+			description="Top-up & charge the user when they're below a configured threshold."
+			icon={<Fuel size={14} />}
+			isSelected={item.usage_model === UsageModel.AutoTopUp}
+			onClick={() => {
+				if (item.usage_model !== UsageModel.AutoTopUp) {
+					setItem({ ...item, usage_model: UsageModel.AutoTopUp });
+				}
+			}}
+			disabled={isAutoTopUpDisabled}
+		/>
+	);
 
 	return (
 		<div className="w-full">
@@ -91,6 +120,18 @@ const SelectUsageModel = () => {
 						}
 					}}
 				/>
+				{isAutoTopUpDisabled ? (
+					<Tooltip>
+						<TooltipTrigger className="w-full col-span-2">
+							{autoTopUpButton}
+						</TooltipTrigger>
+						<TooltipContent>
+							Only available for single use features
+						</TooltipContent>
+					</Tooltip>
+				) : (
+					autoTopUpButton
+				)}
 			</div>
 		</div>
 	);

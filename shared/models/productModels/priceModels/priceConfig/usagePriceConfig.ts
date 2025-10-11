@@ -6,6 +6,7 @@ export enum BillWhen {
 	InAdvance = "in_advance",
 	StartOfPeriod = "start_of_period",
 	EndOfPeriod = "end_of_period",
+	Immediate = "immediate",
 }
 
 export const UsageTierSchema = z.object({

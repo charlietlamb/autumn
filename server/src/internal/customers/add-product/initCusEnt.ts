@@ -204,5 +204,6 @@ export const initCusEntitlement = ({
 		entities: newEntities,
 		usage_allowed: usageAllowed,
 		next_reset_at: nextResetAtValue,
+		auto_topup_config: options?.auto_topup_config || null,
 	};
 };

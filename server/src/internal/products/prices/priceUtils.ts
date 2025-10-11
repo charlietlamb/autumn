@@ -78,7 +78,8 @@ export const getBillingType = (config: FixedPriceConfig | UsagePriceConfig) => {
 	const usageConfig = config as UsagePriceConfig;
 	if (
 		usageConfig.bill_when === BillWhen.InAdvance ||
-		usageConfig.bill_when === BillWhen.StartOfPeriod
+		usageConfig.bill_when === BillWhen.StartOfPeriod ||
+		usageConfig.bill_when === BillWhen.Immediate
 	) {
 		return BillingType.UsageInAdvance;
 	} else if (usageConfig.bill_when === BillWhen.EndOfPeriod) {

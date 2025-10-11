@@ -91,6 +91,16 @@ export const toFeaturePriceItem = ({
 		itemConfig.rollover = ent.rollover;
 	}
 
+	let usageModel = UsageModel.PayPerUse;
+	if (
+		config.bill_when === BillWhen.StartOfPeriod ||
+		config.bill_when === BillWhen.InAdvance
+	) {
+		usageModel = UsageModel.Prepaid;
+	} else if (config.bill_when === BillWhen.Immediate) {
+		usageModel = UsageModel.AutoTopUp;
+	}
+
 	const item: ProductItem = {
 		feature_id: ent.feature.id,
 		feature_type:
@@ -107,11 +117,7 @@ export const toFeaturePriceItem = ({
 
 		entity_feature_id: ent.entity_feature_id,
 		reset_usage_when_enabled: !ent.carry_from_previous,
-		usage_model:
-			config.bill_when == BillWhen.StartOfPeriod ||
-			config.bill_when == BillWhen.InAdvance
-				? UsageModel.Prepaid
-				: UsageModel.PayPerUse,
+		usage_model: usageModel,
 
 		// Stored in backend
 		created_at: ent.created_at,

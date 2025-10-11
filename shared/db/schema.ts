@@ -12,6 +12,8 @@ import { entitiesRelations } from "../models/cusModels/entityModels/entityRelati
 import { entities } from "../models/cusModels/entityModels/entityTable.js";
 import { invoiceRelations } from "../models/cusModels/invoiceModels/invoiceRelations.js";
 import { invoices } from "../models/cusModels/invoiceModels/invoiceTable.js";
+import { autoTopupHistoryRelations } from "../models/cusProductModels/cusEntModels/autoTopUpModels/autoTopUpHistoryRelations.js";
+import { autoTopupHistory } from "../models/cusProductModels/cusEntModels/autoTopUpModels/autoTopUpHistoryTable.js";
 import { customerEntitlementsRelations } from "../models/cusProductModels/cusEntModels/cusEntRelations.js";
 import { customerEntitlements } from "../models/cusProductModels/cusEntModels/cusEntTable.js";
 import { replaceableRelations } from "../models/cusProductModels/cusEntModels/replaceableRelations.js";
@@ -102,6 +104,7 @@ export {
 	events,
 	replaceables,
 	rollovers,
+	autoTopupHistory,
 	// Auth
 	user,
 	session,
@@ -129,6 +132,7 @@ export {
 	replaceableRelations,
 	invoiceRelations,
 	rolloverRelations,
+	autoTopupHistoryRelations,
 	// Auth Relations
 	userRelations,
 	memberRelations,

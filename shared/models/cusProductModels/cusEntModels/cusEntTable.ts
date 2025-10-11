@@ -11,7 +11,7 @@ import { collatePgColumn } from "../../../db/utils.js";
 import { features } from "../../featureModels/featureTable.js";
 import { entitlements } from "../../productModels/entModels/entTable.js";
 import { customerProducts } from "../cusProductTable.js";
-import type { EntityBalance } from "./cusEntModels.js";
+import type { AutoTopUpConfig, EntityBalance } from "./cusEntModels.js";
 
 export const customerEntitlements = pgTable(
 	"customer_entitlements",
@@ -29,6 +29,9 @@ export const customerEntitlements = pgTable(
 		usage_allowed: boolean("usage_allowed").default(false),
 		adjustment: numeric({ mode: "number" }),
 		entities: jsonb("entities").$type<Record<string, EntityBalance>>(),
+
+		// Auto top-up configuration
+		auto_topup_config: jsonb("auto_topup_config").$type<AutoTopUpConfig>(),
 
 		// Optional...
 		customer_id: text("customer_id"),
