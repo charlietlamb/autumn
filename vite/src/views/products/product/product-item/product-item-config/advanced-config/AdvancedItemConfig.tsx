@@ -1,19 +1,18 @@
-import { useProductItemContext } from "../../ProductItemContext";
+import { FeatureUsageType, UsageModel } from "@autumn/shared";
 
 import { ToggleButton } from "@/components/general/ToggleButton";
-import { OnDecreaseSelect } from "./proration-config/OnDecreaseSelect";
-import { OnIncreaseSelect } from "./proration-config/OnIncreaseSelect";
-import { shouldShowProrationConfig } from "@/utils/product/productItemUtils";
+import { Input } from "@/components/ui/input";
+import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
+import { notNullish } from "@/utils/genUtils";
 import {
 	getFeatureCreditSystem,
 	getFeatureUsageType,
 } from "@/utils/product/entitlementUtils";
-import { FeatureUsageType } from "@autumn/shared";
-import { Input } from "@/components/ui/input";
-
+import { shouldShowProrationConfig } from "@/utils/product/productItemUtils";
+import { useProductItemContext } from "../../ProductItemContext";
+import { OnDecreaseSelect } from "./proration-config/OnDecreaseSelect";
+import { OnIncreaseSelect } from "./proration-config/OnIncreaseSelect";
 import { RolloverConfigView } from "./RolloverConfig";
-import { notNullish } from "@/utils/genUtils";
-import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
 
 export const AdvancedItemConfig = () => {
 	const { features } = useFeaturesQuery();
@@ -23,6 +22,7 @@ export const AdvancedItemConfig = () => {
 
 	const usageType = getFeatureUsageType({ item, features });
 	const hasCreditSystem = getFeatureCreditSystem({ item, features });
+	const isAutoTopUp = item.usage_model === UsageModel.AutoTopUp;
 	const showRolloverConfig =
 		(hasCreditSystem || usageType === FeatureUsageType.Single) &&
 		item.interval !== null &&
@@ -35,27 +35,29 @@ export const AdvancedItemConfig = () => {
 				className={`overflow-hidden transition-all duration-150 ease-out h-full`}
 			>
 				<div className="flex flex-col gap-4 text-sm">
-					<ToggleButton
-						value={item.reset_usage_when_enabled}
-						setValue={() => {
-							setItem({
-								...item,
-								reset_usage_when_enabled: !item.reset_usage_when_enabled,
-							});
-						}}
-						infoContent="A customer has used 20/100 credits on a free plan. Then they upgrade to a Pro plan with 500 credits. If this flag is enabled, they'll get 500 credits on upgrade. If false, they'll have 480."
-						buttonText={
-							<span className="whitespace-normal text-left leading-relaxed">
-								Reset existing usage when product is enabled
-							</span>
-						}
-						className="text-t3 h-fit items-start gap-1"
-						disabled={
-							usageType === FeatureUsageType.Continuous ||
-							notNullish(item.config?.rollover)
-						}
-						switchClassName="mt-[3px]"
-					/>
+					{!isAutoTopUp && (
+						<ToggleButton
+							value={item.reset_usage_when_enabled}
+							setValue={() => {
+								setItem({
+									...item,
+									reset_usage_when_enabled: !item.reset_usage_when_enabled,
+								});
+							}}
+							infoContent="A customer has used 20/100 credits on a free plan. Then they upgrade to a Pro plan with 500 credits. If this flag is enabled, they'll get 500 credits on upgrade. If false, they'll have 480."
+							buttonText={
+								<span className="whitespace-normal text-left leading-relaxed">
+									Reset existing usage when product is enabled
+								</span>
+							}
+							className="text-t3 h-fit items-start gap-1"
+							disabled={
+								usageType === FeatureUsageType.Continuous ||
+								notNullish(item.config?.rollover)
+							}
+							switchClassName="mt-[3px]"
+						/>
+					)}
 
 					<div className="h-4.5 relative flex flex-row items-center gap-3">
 						<ToggleButton

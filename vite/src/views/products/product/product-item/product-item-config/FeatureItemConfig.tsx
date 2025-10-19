@@ -1,18 +1,22 @@
-import { useProductItemContext } from "../ProductItemContext";
-import { BillingInterval, FeatureUsageType, Infinite } from "@autumn/shared";
-import { SelectCycle } from "./components/feature-price/SelectBillingCycle";
-import { IncludedUsage } from "./components/IncludedUsage";
-import { SelectResetCycle } from "./components/SelectResetCycle";
-import FeaturePrice from "./components/feature-price/FeaturePrice";
-import { isFeatureItem, isFeaturePriceItem } from "@/utils/product/getItemType";
+import {
+	BillingInterval,
+	FeatureUsageType,
+	Infinite,
+	UsageModel,
+} from "@autumn/shared";
 import React from "react";
-
+import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
 import { notNullish } from "@/utils/genUtils";
 import {
 	getFeature,
 	getFeatureUsageType,
 } from "@/utils/product/entitlementUtils";
-import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
+import { isFeatureItem, isFeaturePriceItem } from "@/utils/product/getItemType";
+import { useProductItemContext } from "../ProductItemContext";
+import FeaturePrice from "./components/feature-price/FeaturePrice";
+import { SelectCycle } from "./components/feature-price/SelectBillingCycle";
+import { IncludedUsage } from "./components/IncludedUsage";
+import { SelectResetCycle } from "./components/SelectResetCycle";
 
 export const FeatureConfig = () => {
 	const { features } = useFeaturesQuery();
@@ -58,7 +62,6 @@ export const FeatureConfig = () => {
 					<SelectResetCycle />
 				</div>
 			)}
-
 			{isFeaturePrice && (
 				<React.Fragment>
 					<div className="transition-all duration-300 ease-in-out whitespace-nowrap">

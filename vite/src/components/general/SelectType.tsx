@@ -6,6 +6,7 @@ export const SelectType = ({
 	icon,
 	isSelected,
 	onClick,
+	className,
 	disabled = false,
 }: {
 	title: string;
@@ -13,6 +14,7 @@ export const SelectType = ({
 	icon: React.ReactNode;
 	isSelected: boolean;
 	onClick: () => void;
+	className?: string;
 	disabled?: boolean;
 }) => {
 	return (
@@ -23,6 +25,7 @@ export const SelectType = ({
 					? "shadow-inner bg-stone-100 border border-zinc-400 ring-1 ring-zinc-300/50"
 					: "border hover:shadow-sm",
 				disabled && "opacity-50 cursor-default",
+				className,
 			)}
 			onClick={onClick}
 			disabled={disabled}

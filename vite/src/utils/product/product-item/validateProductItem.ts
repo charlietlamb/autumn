@@ -5,6 +5,7 @@ import {
 	FrontendProductItem,
 	RolloverConfig,
 	RolloverDuration,
+	UsageModel,
 } from "@autumn/shared";
 import { toast } from "sonner";
 import { isFeatureItem, isFeaturePriceItem } from "../getItemType";
@@ -60,6 +61,12 @@ export const validateProductItem = ({
 	if (isFeaturePriceItem(item) && nullish(item.usage_model)) {
 		toast.error("Please select a usage model");
 		return null;
+	}
+
+	// Set included_usage to 0 for AutoTopUp
+	if (item.usage_model === UsageModel.AutoTopUp) {
+		item.included_usage = 0;
+		item.reset_usage_when_enabled = false;
 	}
 
 	//if both item.tiers and item.price are set, set item.price to null

@@ -5,6 +5,7 @@ import {
 	type Customer,
 	type Feature,
 	FeatureType,
+	type FullCusEntWithFullCusProduct,
 	type FullCustomerEntitlement,
 	type Organization,
 } from "@autumn/shared";
@@ -12,10 +13,15 @@ import { Decimal } from "decimal.js";
 import type { DrizzleCli } from "@/db/initDrizzle.js";
 import { CusService } from "@/internal/customers/CusService.js";
 import { refreshCusCache } from "@/internal/customers/cusCache/updateCachedCus.js";
-import { getFeatureBalance } from "@/internal/customers/cusProducts/cusEnts/cusEntUtils.js";
+import { findCusEnt } from "@/internal/customers/cusProducts/cusEnts/cusEntUtils/findCusEntUtils.js";
+import {
+	getFeatureBalance,
+	getRelatedCusPrice,
+} from "@/internal/customers/cusProducts/cusEnts/cusEntUtils.js";
 import { deductFromApiCusRollovers } from "@/internal/customers/cusProducts/cusEnts/cusRollovers/rolloverDeductionUtils.js";
 import { getCusEntsInFeatures } from "@/internal/customers/cusUtils/cusUtils.js";
 import { featureToCreditSystem } from "@/internal/features/creditSystemUtils.js";
+import { handleAutoTopUp } from "./handleAutoTopUp.js";
 import { handleThresholdReached } from "./handleThresholdReached.js";
 import {
 	deductAllowanceFromCusEnt,
@@ -282,6 +288,32 @@ export const updateUsage = async ({
 				},
 				setZeroAdjustment: true,
 			});
+
+			const usageBasedEnt = findCusEnt({
+				cusEnts,
+				feature,
+				entity: customer.entity,
+				onlyUsageAllowed: true,
+			}) as FullCusEntWithFullCusProduct | undefined;
+
+			const shouldCheckAutoTopUp =
+				usageBasedEnt?.auto_topup_config?.enabled &&
+				usageBasedEnt?.customer_product;
+
+			if (shouldCheckAutoTopUp) {
+				await handleAutoTopUp({
+					cusEnt: usageBasedEnt,
+					cusEnts,
+					cusProduct: usageBasedEnt.customer_product,
+					cusPrices,
+					customer,
+					org,
+					env,
+					db,
+					logger,
+					feature,
+				});
+			}
 		}
 
 		handleThresholdReached({

@@ -219,13 +219,17 @@ export const toFeatureAndPrice = ({
 
 	const entInterval = itemToEntInterval(item);
 
+	let billWhen = BillWhen.EndOfPeriod;
+	if (item.usage_model === UsageModel.Prepaid) {
+		billWhen = BillWhen.StartOfPeriod;
+	} else if (item.usage_model === UsageModel.AutoTopUp) {
+		billWhen = BillWhen.Immediate;
+	}
+
 	const config: UsagePriceConfig = {
 		type: PriceType.Usage,
 
-		bill_when:
-			item.usage_model == UsageModel.Prepaid
-				? BillWhen.StartOfPeriod
-				: BillWhen.EndOfPeriod,
+		bill_when: billWhen,
 
 		billing_units: item.billing_units || 1,
 		should_prorate: entInterval == EntInterval.Lifetime,

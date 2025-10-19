@@ -1,25 +1,34 @@
-import FieldLabel from "@/components/general/modal-components/FieldLabel";
-import { SelectItemFeature } from "./SelectItemFeature";
-import { useProductItemContext } from "../ProductItemContext";
-import { useProductContext } from "../../ProductContext";
-import { FeatureType } from "@autumn/shared";
-import { getFeature } from "@/utils/product/entitlementUtils";
-import { FeatureConfig } from "../product-item-config/FeatureItemConfig";
-import { WarningBox } from "@/components/general/modal-components/WarningBox";
+import { FeatureType, UsageModel } from "@autumn/shared";
 import { ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import FieldLabel from "@/components/general/modal-components/FieldLabel";
+import { WarningBox } from "@/components/general/modal-components/WarningBox";
 import { Button } from "@/components/ui/button";
+import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
+import { getFeature } from "@/utils/product/entitlementUtils";
 import { isFeatureItem, isFeaturePriceItem } from "@/utils/product/getItemType";
 import { itemsHaveSameInterval } from "@/utils/product/productItemUtils";
-import { toast } from "sonner";
-import { useFeaturesQuery } from "@/hooks/queries/useFeaturesQuery";
+import { useProductContext } from "../../ProductContext";
+import { useProductItemContext } from "../ProductItemContext";
+import { AutoTopUpConfig } from "../product-item-config/AutoTopUpConfig";
+import { FeatureConfig } from "../product-item-config/FeatureItemConfig";
+import { SelectItemFeature } from "./SelectItemFeature";
 
-export const ConfigWithFeature = () => {
+export const ConfigWithFeature = ({
+	isAddFeature = false,
+}: {
+	isAddFeature?: boolean;
+}) => {
 	const { product, setProduct } = useProductContext();
 	const { item, setOpen, warning } = useProductItemContext();
 	const { features } = useFeaturesQuery();
 
 	const isBooleanFeature =
 		getFeature(item.feature_id, features)?.type === FeatureType.Boolean;
+
+	const isPayPerUse = item.usage_model === UsageModel.PayPerUse;
+	const isUpfrontQuantity = item.usage_model === UsageModel.Prepaid;
+	const isAutoTopUp = item.usage_model === UsageModel.AutoTopUp;
 
 	const otherItemIndex = product.items.findIndex(
 		(i: any) =>
@@ -46,12 +55,24 @@ export const ConfigWithFeature = () => {
 
 	return (
 		<div className="flex flex-col gap-4 text-sm w-full">
-			<div>
-				<FieldLabel>Feature</FieldLabel>
-				<SelectItemFeature />
-			</div>
+			{isAddFeature && (
+				<>
+					<div>
+						<FieldLabel>Feature</FieldLabel>
+						<SelectItemFeature />
+					</div>
+					{!isBooleanFeature && <FeatureConfig />}
+				</>
+			)}
 
-			{!isBooleanFeature && <FeatureConfig />}
+			{!isAddFeature && (
+				<>
+					{!isBooleanFeature && (isPayPerUse || isUpfrontQuantity) && (
+						<FeatureConfig />
+					)}
+					{isAutoTopUp && <AutoTopUpConfig />}
+				</>
+			)}
 
 			{warning && (
 				<WarningBox className="py-2">

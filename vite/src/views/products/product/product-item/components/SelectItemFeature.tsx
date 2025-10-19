@@ -8,7 +8,13 @@ import {
 import { useProductItemContext } from "../ProductItemContext";
 import { useProductContext } from "../../ProductContext";
 import { FeatureTypeBadge } from "@/views/products/features/components/FeatureTypeBadge";
-import { Feature, FeatureType, ProductItemType } from "@autumn/shared";
+import {
+	Feature,
+	FeatureType,
+	FeatureUsageType,
+	ProductItemType,
+	UsageModel,
+} from "@autumn/shared";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
@@ -30,7 +36,19 @@ export const SelectItemFeature = () => {
 				onOpenChange={setOpen}
 				value={item.feature_id || ""}
 				onValueChange={(value) => {
-					setItem({ ...item, feature_id: value });
+					const selectedFeature = features.find((f) => f.id === value);
+					const isContinuousUse =
+						selectedFeature?.config?.usage_type === FeatureUsageType.Continuous;
+					const isAutoTopUp = item.usage_model === UsageModel.AutoTopUp;
+
+					setItem({
+						...item,
+						feature_id: value,
+						usage_model:
+							isContinuousUse && isAutoTopUp
+								? UsageModel.Prepaid
+								: item.usage_model,
+					});
 				}}
 				disabled={isUpdate}
 			>

@@ -9,6 +9,19 @@ export const EntityBalanceSchema = z.object({
 	adjustment: z.number(),
 });
 
+export const AutoTopUpConfigSchema = z
+	.object({
+		enabled: z.boolean(),
+		threshold: z.number().min(0),
+		topup_amount: z.number().min(0),
+		last_topup_at: z.number().nullish(),
+	})
+	.refine((data) => data.threshold <= data.topup_amount, {
+		message:
+			"Threshold must be less than top-up amount to prevent immediate re-triggering",
+		path: ["threshold"],
+	});
+
 export const CustomerEntitlementSchema = z.object({
 	// Foreign keys
 	id: z.string(),
@@ -31,6 +44,9 @@ export const CustomerEntitlementSchema = z.object({
 
 	// Group by fields
 	entities: z.record(z.string(), EntityBalanceSchema).nullish(),
+
+	// Auto top-up configuration
+	auto_topup_config: AutoTopUpConfigSchema.nullish(),
 });
 
 export const FullCustomerEntitlementSchema = CustomerEntitlementSchema.extend({
@@ -40,6 +56,7 @@ export const FullCustomerEntitlementSchema = CustomerEntitlementSchema.extend({
 });
 
 export type EntityBalance = z.infer<typeof EntityBalanceSchema>;
+export type AutoTopUpConfig = z.infer<typeof AutoTopUpConfigSchema>;
 
 export type CustomerEntitlement = z.infer<typeof CustomerEntitlementSchema>;
 export type FullCustomerEntitlement = z.infer<

@@ -4,7 +4,10 @@ import { CustomerSchema } from "../cusModels/cusModels.js";
 import { ProcessorType } from "../genModels/genEnums.js";
 import { FreeTrialSchema } from "../productModels/freeTrialModels/freeTrialModels.js";
 import { ProductSchema } from "../productModels/productModels.js";
-import { FullCustomerEntitlementSchema } from "./cusEntModels/cusEntModels.js";
+import {
+	AutoTopUpConfigSchema,
+	FullCustomerEntitlementSchema,
+} from "./cusEntModels/cusEntModels.js";
 import { FullCustomerPriceSchema } from "./cusPriceModels/cusPriceModels.js";
 import { CollectionMethod, CusProductStatus } from "./cusProductEnums.js";
 
@@ -15,6 +18,7 @@ export const FeatureOptionsSchema = z.object({
 
 	adjustable_quantity: z.boolean().nullish(),
 	internal_feature_id: z.string().nullish(),
+	auto_topup_config: AutoTopUpConfigSchema.nullish(),
 });
 
 export const BillingCycleAnchorConfig = z.object({

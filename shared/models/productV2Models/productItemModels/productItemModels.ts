@@ -34,6 +34,7 @@ export const PriceTierSchema = z.object({
 export enum UsageModel {
 	Prepaid = "prepaid",
 	PayPerUse = "pay_per_use",
+	AutoTopUp = "auto_top_up",
 }
 
 export enum ProductItemFeatureType {
